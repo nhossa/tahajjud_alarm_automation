@@ -1,0 +1,19 @@
+I need to code somethihng to run this when i am offline
+
+startying on getting location
+a problem could be what if i am offline when travelling
+
+
+
+
+after that i need to use location to get the right prayer time
+\
+afgter that i need to subtract 30 or whatever number and send alarm system to phone
+
+after this sends i need to check if i leave my location with an arbitrary time like an hour to see if I actually woke up for fajr
+
+Whether i leave or not I have to determine success so lets say fajr success is one metric
+
+after this i log the results of that day into a text file which i then send over to the cloud
+
+after one week lambda sends me a summary of the week via email 
