@@ -31,7 +31,7 @@ ENVIRONMENT VARIABLES
 
 These must be set inside the Lambda configuration:
 
-S3_BUCKET = tahajjud-naim-bucket
+S3_BUCKET = your-bucket-name
 TWILIO_SID = your Twilio Account SID
 TWILIO_TOKEN = your Twilio Auth Token
 TO_NUMBER = your phone number in E.164 format (e.g., 1234567890)
