@@ -1,10 +1,14 @@
-TAHAJJUD AUTOMATION PROJECT
+==============================
+  TAHAJJUD AUTOMATION PROJECT
+==============================
 
 This project is a cloud-based event-driven automation that calculates daily Tahajjud time based on Maghrib and Fajr timings, schedules an AWS EventBridge rule, and triggers a Lambda function that logs the event to S3 and makes a call through Twilio.
 
 It runs completely in the cloud. No local scripts or servers are needed.
 
+------------------------------
 OVERVIEW
+------------------------------
 
 Core Idea:
 Use AWS services to automatically determine prayer times and trigger an alarm without manual input. The system updates itself daily.
@@ -19,15 +23,18 @@ twilio_call.py: contains Twilio voice call logic.
 
 location.py: fetches the most recent latitude, longitude, and timezone from S3.
 
+------------------------------
 AWS SERVICES USED
+------------------------------
 
 Lambda - runs all code serverlessly
 EventBridge - creates and triggers scheduled events
 S3 - stores state (latest location) and execution logs
 IAM - grants Lambda permission to access S3 and EventBridge
 
-
+------------------------------
 ENVIRONMENT VARIABLES
+------------------------------
 
 These must be set inside the Lambda configuration:
 
@@ -37,14 +44,17 @@ TWILIO_TOKEN = your Twilio Auth Token
 TO_NUMBER = your phone number in E.164 format (e.g., 1234567890)
 FROM_NUMBER = your Twilio-verified number 
 
+------------------------------
 IAM POLICY REQUIREMENTS
+------------------------------
 
 The Lambda execution role must allow access to S3 and EventBridge.
 
 An example permission JSON is attached
 
-
+------------------------------
 S3 SETUP
+------------------------------
 
 Create an S3 bucket 
 
@@ -62,7 +72,9 @@ Upload an initial state file to "state/test.json" with content like:
 
 This file provides the location data for prayer time calculations.
 
+------------------------------
 DEPLOYMENT STEPS
+------------------------------
 
 Install dependencies locally:
 pip install -r requirements.txt -t src/
@@ -77,7 +89,9 @@ Upload the entire project folder — including the application code and all inst
 
  Note: typing_extensions will be automatically installed as part of the dependencies when uploading or packaging the Lambda function.
 
+------------------------------
 TESTING
+------------------------------
 
 Manual test from AWS Console:
 
