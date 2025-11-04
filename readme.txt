@@ -50,7 +50,74 @@ IAM POLICY REQUIREMENTS
 
 The Lambda execution role must allow access to S3 and EventBridge.
 
-An example permission JSON is attached
+An example permission JSON is attached.
+
+### ✅ EVENTBRIDGE RULE PERMISSIONS (REQUIRED)
+
+EventBridge **Rules** invoke your Lambda **as an AWS service**, not through your IAM role.  
+Because of that, your Lambda must explicitly grant permission for the EventBridge service (`events.amazonaws.com`) to invoke it — otherwise, the alarm rule will never actually trigger, even though it appears as “Enabled.”
+
+You can grant this permission in **two ways**:
+
+---
+
+#### 🔹 OPTION 1 — AWS Console (No CLI Needed)
+
+1. Go to **AWS Console → Lambda → planner-lambda**.  
+2. Click the **Configuration** tab.  
+3. In the left sidebar, choose **Permissions**.  
+4. Scroll to **Resource-based policy**, then click **Add permissions → Add principal**.  
+5. Fill in the following fields exactly:
+
+| Field             | Value |
+|-------------------|------------------------|
+| **Principal**     | `events.amazonaws.com` |
+| **Action**        | `lambda:InvokeFunction` |
+| **Source ARN**    | `arn:aws:events:us-east-1:<ACCOUNT_ID>:rule/alarm-*` |
+| **(SID)**         | `allow-eventbridge` |
+
+(Replace `<ACCOUNT_ID>` with your AWS account ID.)  
+6. Click **Save**.  
+You should now see a new permission entry under “Resource-based policy.”
+
+---
+
+#### 🔹 OPTION 2 — AWS CLI (Scriptable Way)
+
+Run this once (replace `<ACCOUNT_ID>` with your AWS account ID):
+
+```bash
+aws lambda add-permission \
+  --function-name planner-lambda \
+  --statement-id allow-eventbridge \
+  --action "lambda:InvokeFunction" \
+  --principal events.amazonaws.com \
+  --source-arn "arn:aws:events:us-east-1:<ACCOUNT_ID>:rule/alarm-*" \
+  --region us-east-1
+```
+
+To verify:
+
+```bash
+aws lambda get-policy --function-name planner-lambda
+```
+
+This adds a policy like:
+
+```json
+{
+  "Sid": "allow-eventbridge",
+  "Effect": "Allow",
+  "Principal": { "Service": "events.amazonaws.com" },
+  "Action": "lambda:InvokeFunction",
+  "Resource": "arn:aws:lambda:us-east-1:<ACCOUNT_ID>:function:planner-lambda",
+  "Condition": {
+    "ArnLike": {
+      "AWS:SourceArn": "arn:aws:events:us-east-1:<ACCOUNT_ID>:rule/alarm-*"
+    }
+  }
+}
+```
 
 ------------------------------
 S3 SETUP
@@ -145,7 +212,9 @@ To test the Twilio call:
 
 This runs the Twilio call logic and logs the result to S3.
 
+------------------------------
 HOW THE SYSTEM WORKS
+------------------------------
 
 The planner Lambda runs daily via the eventbridge scheduler.
 
@@ -160,8 +229,6 @@ When the rule triggers, the same Lambda switches to alarm mode.
 The alarm makes a Twilio voice call and logs the status off that call into S3.
 
 After execution, the EventBridge rule is deleted automatically.
-
-PROJECT STRUCTURE
 
 
 NOTES
