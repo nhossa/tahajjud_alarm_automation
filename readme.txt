@@ -90,6 +90,42 @@ Upload the entire project folder — including the application code and all inst
  Note: typing_extensions will be automatically installed as part of the dependencies when uploading or packaging the Lambda function.
 
 ------------------------------
+DAILY SCHEDULER SET-UP
+------------------------------
+After deploying both Lambda functions, a daily EventBridge scheduler must be created to automatically invoke your lambda function once per day. This Lambda calculates prayer times, determines the next Tahajjud window, and sets up the alarm event for that night.
+
+To create the recurring daily schedule:
+
+Go to AWS Console → EventBridge → Schedules.
+
+Click Create schedule and configure the following:
+
+Name: your-lambda-scheduler
+
+Schedule pattern: Cron expression
+
+Expression: 0 0 * * ? *
+(Runs every day at 12:00 AM Eastern Time, which is midnight in Sterling, VA.)
+
+Target type: Lambda function
+
+Target: your_lambda.py
+
+Enable the schedule to be recurring daily
+
+Once created, it appears under the EventBridge Schedules tab as Enabled, with the target type LAMBDA_Invoke.
+
+From that point forward, the system is fully automated:
+
+The scheduler triggers planner-lambda daily at midnight.
+
+The planner computes prayer times and creates a one-time EventBridge rule for that night’s Tahajjud alarm.
+
+After the alarm fires, the rule is deleted, and the cycle repeats automatically each day.
+
+You only need to create this daily scheduler once — the entire pipeline runs continuously without any manual maintenance.
+
+------------------------------
 TESTING
 ------------------------------
 
